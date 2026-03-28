@@ -292,14 +292,21 @@ if uploaded_file is not None:
                 alpha = 0.45 
                 superimposed_img = cv2.addWeighted(original_img_np, 1 - alpha, heatmap_colored, alpha, 0)
                 
-                # Render the original scan next to the Grad-CAM scan
+               # Render the original scan next to the Grad-CAM scan
                 out_col1, out_col2 = st.columns(2, gap="large")
                 with out_col1:
                     st.markdown("**Original Patient CT Scan**")
                     st.image(image_ready, use_column_width=True)
                 with out_col2:
                     st.markdown("**AI Localization Heatmap (Grad-CAM)**")
-                    st.image(superimposed_img, caption=f"Regions triggering '{prediction_label}'", use_column_width=True)
+                    
+                    # --- DYNAMIC CAPTION LOGIC ---
+                    if prediction_label == "Normal":
+                        heatmap_caption = "Heatmap highlights healthy tissue analyzed to confirm the absence of tumors."
+                    else:
+                        heatmap_caption = f"Heatmap highlights abnormal regions triggering '{prediction_label}'."
+                        
+                    st.image(superimposed_img, caption=heatmap_caption, use_column_width=True)
             except Exception as e:
                 st.error(f"Could not generate Grad-CAM visualization. Error: {e}")
                 
